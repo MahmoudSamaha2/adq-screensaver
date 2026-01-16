@@ -1,0 +1,45 @@
+name: Build Screensaver
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore ScreensaverPlayer.csproj
+        working-directory: .
+
+      - name: Build with MSBuild
+        run: msbuild ScreensaverPlayer.csproj /p:Configuration=Release
+        working-directory: .
+
+      - name: Copy video file (if present)
+        run: |
+          if exist "adq screensaver.mp4" copy "adq screensaver.mp4" "bin\Release\adq screensaver.mp4"
+        shell: cmd
+        working-directory: .
+
+      - name: Rename EXE to SCR
+        run: |
+          ren bin\Release\ScreensaverPlayer.exe ScreensaverPlayer.scr
+        shell: cmd
+        working-directory: .
+
+      - name: Upload screensaver artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScreensaverPlayer
+          path: |
+            bin/Release/ScreensaverPlayer.scr
+            bin/Release/adq screensaver.mp4

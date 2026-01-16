@@ -1,0 +1,26 @@
+## Visual Studio / .NET ignores
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+
+## NuGet
+packages/
+*.nupkg
+*.snupkg
+
+## Resharper and tools
+_ReSharper*/
+*.DotSettings.user
+
+## Build artifacts
+*.pdb
+*.mdb
+TestResult.xml
+
+## OS files
+.DS_Store
+Thumbs.db
