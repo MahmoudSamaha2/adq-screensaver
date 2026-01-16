@@ -6,8 +6,9 @@ namespace ScreensaverPlayer
 {
     public class MainForm : Form
     {
-        private string gifResourceName = "ScreensaverPlayer.sc.gif";
-        private PictureBox pictureBox;
+    private string gifResourceName = "ScreensaverPlayer.sc.gif";
+    private PictureBox pictureBox;
+    private System.IO.MemoryStream gifStream;
 
         public MainForm(string[] args)
         {
@@ -30,18 +31,33 @@ namespace ScreensaverPlayer
             };
             this.Controls.Add(pictureBox);
 
-            using (var stream = typeof(MainForm).Assembly.GetManifestResourceStream(gifResourceName))
+            var stream = typeof(MainForm).Assembly.GetManifestResourceStream(gifResourceName);
+            if (stream != null)
             {
-                if (stream != null)
+                // Copy to a MemoryStream and keep it alive
+                byte[] gifBytes;
+                using (var ms = new System.IO.MemoryStream())
                 {
-                    pictureBox.Image = Image.FromStream(stream);
+                    stream.CopyTo(ms);
+                    gifBytes = ms.ToArray();
                 }
-                else
-                {
-                    MessageBox.Show("Could not find embedded GIF resource.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    this.Close();
-                }
+                gifStream = new System.IO.MemoryStream(gifBytes);
+                pictureBox.Image = Image.FromStream(gifStream);
             }
+            else
+            {
+                MessageBox.Show("Could not find embedded GIF resource.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.Close();
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                gifStream?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
