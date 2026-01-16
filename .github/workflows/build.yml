@@ -16,8 +16,8 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Restore NuGet packages
-        run: nuget restore ScreensaverPlayer.csproj
+      - name: Restore dependencies
+        run: dotnet restore ScreensaverPlayer.csproj
         working-directory: .
 
       - name: Build with MSBuild
