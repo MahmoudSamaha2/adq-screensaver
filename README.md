@@ -1,6 +1,6 @@
 # ScreensaverPlayer
 
-A simple Windows screensaver (.scr) that plays an GIF in fullscreen using Windows Media Player.
+A simple Windows screensaver (.scr) that plays an GIF in fullscreen .
 
 ## Instructions
 
