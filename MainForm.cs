@@ -1,18 +1,13 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
-using LibVLCSharp.Shared;
-using LibVLCSharp.WinForms;
 
 namespace ScreensaverPlayer
 {
     public class MainForm : Form
     {
-        private LibVLC _libVLC;
-        private MediaPlayer _mediaPlayer;
-        private VideoView _videoView;
-    private string videoResourceName = "ScreensaverPlayer.adq screensaver.mp4";
-    private string tempVideoPath;
-
+        private string gifResourceName = "ScreensaverPlayer.sc.gif";
+        private PictureBox pictureBox;
 
         public MainForm(string[] args)
         {
@@ -20,7 +15,6 @@ namespace ScreensaverPlayer
             this.WindowState = FormWindowState.Maximized;
             this.TopMost = true;
             this.Load += MainForm_Load;
-            this.FormClosed += MainForm_FormClosed;
             this.KeyDown += (s, e) => this.Close();
             this.MouseMove += (s, e) => this.Close();
             this.MouseClick += (s, e) => this.Close();
@@ -28,53 +22,26 @@ namespace ScreensaverPlayer
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            // Extract embedded video to temp file
-            tempVideoPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid().ToString() + ".mp4");
-            using (var stream = typeof(MainForm).Assembly.GetManifestResourceStream(videoResourceName))
-            using (var file = System.IO.File.OpenWrite(tempVideoPath))
+            pictureBox = new PictureBox
             {
-                stream.CopyTo(file);
-            }
-
-            Core.Initialize();
-            _libVLC = new LibVLC();
-            _mediaPlayer = new MediaPlayer(_libVLC);
-            _videoView = new VideoView
-            {
-                MediaPlayer = _mediaPlayer,
-                Dock = DockStyle.Fill
+                Dock = DockStyle.Fill,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = Color.Black
             };
-            this.Controls.Add(_videoView);
+            this.Controls.Add(pictureBox);
 
-            var media = new Media(_libVLC, tempVideoPath, FromType.FromPath);
-            _mediaPlayer.Play(media);
-            _mediaPlayer.EndReached += (s, ev) =>
+            using (var stream = typeof(MainForm).Assembly.GetManifestResourceStream(gifResourceName))
             {
-                // Loop video
-                _mediaPlayer.Stop();
-                _mediaPlayer.Play(media);
-            };
-        }
-
-        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            // Clean up temp file
-            try
-            {
-                if (!string.IsNullOrEmpty(tempVideoPath) && System.IO.File.Exists(tempVideoPath))
-                    System.IO.File.Delete(tempVideoPath);
+                if (stream != null)
+                {
+                    pictureBox.Image = Image.FromStream(stream);
+                }
+                else
+                {
+                    MessageBox.Show("Could not find embedded GIF resource.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Close();
+                }
             }
-            catch { }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _mediaPlayer?.Dispose();
-                _libVLC?.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
