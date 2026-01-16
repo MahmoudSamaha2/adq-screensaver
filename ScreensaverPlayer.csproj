@@ -1,14 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <RootNamespace>ScreensaverPlayer</RootNamespace>
-    <AssemblyName>ScreensaverPlayer</AssemblyName>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="LibVLCSharp.WinForms" Version="3.8.1" />
-    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
-    <EmbeddedResource Include="adq screensaver.mp4" />
-  </ItemGroup>
-</Project>
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/ScreensaverPlayer.csproj b/ScreensaverPlayer.csproj
+index 7ee10d079bfb0addfdc380d8c99111c8dfbae877..179e9af248c9c5b83d98f492d0b15288d27f819b 100644
+--- a/ScreensaverPlayer.csproj
++++ b/ScreensaverPlayer.csproj
+@@ -1,14 +1,19 @@
+ <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+   <PropertyGroup>
+     <OutputType>WinExe</OutputType>
+     <TargetFramework>net48</TargetFramework>
+     <UseWindowsForms>true</UseWindowsForms>
+     <RootNamespace>ScreensaverPlayer</RootNamespace>
+     <AssemblyName>ScreensaverPlayer</AssemblyName>
+   </PropertyGroup>
+   <ItemGroup>
+     <PackageReference Include="LibVLCSharp.WinForms" Version="3.8.1" />
+     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.20" />
+-    <EmbeddedResource Include="adq screensaver.mp4" />
++  </ItemGroup>
++  <ItemGroup>
++    <None Remove="adq screensaver.mp4" />
++    <EmbeddedResource Include="adq screensaver.mp4">
++      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
++    </EmbeddedResource>
+   </ItemGroup>
+ </Project>
+ 
+EOF
+)
